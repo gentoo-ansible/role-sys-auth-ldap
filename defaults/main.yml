@@ -1,0 +1,85 @@
+---
+# Install unscd caching daemon?
+sysauth_ldap_unscd_enabled: true
+
+#
+# Settings for nsswitch.conf
+#
+
+# Use LDAP for groups lookup?
+sysauth_ldap_groups_enabled: false
+
+#
+# Settings for ldap.conf (nss_ldap + pam_ldap)
+#
+
+# The URI of the LDAP server to connect to. Multiple server may be specified,
+# separated by space. The URI scheme may be ldap, ldapi, or ldaps. A port
+# number can be specified; the default port number for the selected protocol
+# is used if omitted.
+# - name: uri
+sysauth_ldap_server_uri: 'ldap://localhost'
+
+# The search time limit in seconds (0 for indefinite).
+# - name: timelimit
+sysauth_ldap_bind_timeout: 5
+
+# The bind/connect time limit in seconds (0 for indefinite).
+# -name: bind_timelimit
+sysauth_ldap_search_timeout: 5
+
+# The distinguished name of the search base.
+# - name: base
+sysauth_ldap_base: ou=example.org
+
+# The search scope.
+# - allowed: sub,one,base
+# - name: scope
+sysauth_ldap_scope: one
+
+# The distinguished name of the people search base, relative to
+# the server base DN. The result string is composed of:
+#   <sysauth_ldap_people_base>,<sysauth_ldap_base>?<sysauth_ldap_scope>
+# - name: nss_base_passwd, nss_base_shadow
+sysauth_ldap_people_base: ou=People
+
+# The filter to use when retrieving user information, additional to the uid
+# attribute value assertion (uid=<login>).
+# - name: pam_filter
+sysauth_ldap_people_filter: objectclass=posixAccount
+
+# The distinguished name of the groups search base, relative to
+# sysauth_ldap_groups_base. The result string is composed of:
+#   <sysauth_ldap_groups_base>,<sysauth_ldap_base>?<sysauth_ldap_scope>
+# - name: nss_base_group
+sysauth_ldap_groups_base: ou=Groups
+
+# The name of the group member attribute.
+# - name: pam_member_attribute
+sysauth_ldap_groups_member_attr: memberuid
+
+# The minimum UID number allowed.
+# - name: pam_min_uid
+sysauth_ldap_min_uid: 1000
+
+# List of users' that will not be search in LDAP, i.e. local users.
+# -name: nss_initgroups_ignoreusers
+sysauth_ldap_ignore_users: [ root, portage, nobody, sshd, ldap, cron, postgres ]
+
+# Override values for the specified attributes.
+# - allowed: <attribute> <value>, ...
+# - name: nss_override_attribute_value
+sysauth_ldap_override_attributes: []
+
+#
+# Settings for pam.d/system-login
+#
+
+# Enable pam_mkhomedir module to automatically create user's home directory
+# when it doesn't exist yet?
+sysauth_ldap_mkhomedir_enabled: true
+
+# The umask to use for creating user's home directory. Applicable only when
+# sysauth_ldap_mkhomedir_enabled is 'true'.
+# - name: umask
+sysauth_ldap_mkhomedir_umask: 0077

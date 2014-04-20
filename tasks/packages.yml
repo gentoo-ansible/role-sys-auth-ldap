@@ -1,0 +1,10 @@
+---
+- name: install nss_ldap and pam_ldap
+  portage: package={{ item }}
+  with_items:
+    - sys-auth/nss_ldap
+    - sys-auth/pam_ldap
+
+- name: install unscd
+  portage: package=sys-apps/unscd
+  when: sysauth_ldap_unscd_enabled

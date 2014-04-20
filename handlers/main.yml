@@ -1,0 +1,4 @@
+---
+- name: restart unscd
+  service: name=unscd state=restarted
+  when: sysauth_ldap_unscd_enabled

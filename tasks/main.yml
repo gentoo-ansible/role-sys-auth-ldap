@@ -1,0 +1,8 @@
+---
+- include: packages.yml tags=packages
+- include: configuration.yml tags=configuration
+
+- name: enable and start unscd caching daemon
+  service: name=unscd enabled=yes state=started
+  when: sysauth_ldap_unscd_enabled
+  tags: services

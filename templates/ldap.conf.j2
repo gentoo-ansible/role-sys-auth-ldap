@@ -1,0 +1,171 @@
+# {{ ansible_managed }}
+#
+# This is the configuration file for the LDAP nameservice
+# switch library and the LDAP PAM module.
+#
+
+# Specifies the URI(s) of the LDAP server(s) to connect to. Must be resolvable
+# without using LDAP. The URI scheme may be ldap, ldapi, or ldaps, specifying
+# LDAP over TCP, IPC and SSL respectively. A port number can be specified; the
+# default port number for the selected protocol is used if omitted.
+uri {{ sysauth_ldap_server_uri }}
+
+# The distinguished name of the search base.
+base {{ sysauth_ldap_base }}
+
+# The LDAP version to use. Default is 3 if supported by client library.
+ldap_version 3
+
+# The distinguished name to bind to the server with.
+# Default is to bind anonymously.
+#binddn cn=proxyuser,dc=padl,dc=com
+
+# The credentials to bind with. Default is no credential.
+#bindpw secret
+
+# The distinguished name to bind to the server with if the effective user ID is
+# root. Password is stored in /etc/ldap.secret (mode 600).
+#rootbinddn cn=manager,dc=padl,dc=com
+
+# The search scope; sub, one, or base.
+scope {{ sysauth_ldap_scope }}
+
+# Search timelimit in seconds (0 for indefinite; default 0).
+timelimit {{ sysauth_ldap_search_timeout }}
+
+# Bind/connect timelimit (0 for indefinite; default 30).
+bind_timelimit {{ sysauth_ldap_bind_timeout }}
+
+# Reconnect policy:
+#   hard_open: Reconnect to DSA with exponential backoff if opening connection
+#              failed.
+#   hard_init: Reconnect to DSA with exponential backoff if initializing
+#              connection failed.
+#   hard:      Alias for hard_open.
+#   soft:      Return immediately on server failure.
+bind_policy soft
+
+# Connection policy:
+#   persist:   DSA connections are kept open (default)
+#   oneshot:   DSA connections destroyed after request
+#nss_connect_policy persist
+
+# Idle timelimit; client will close connections (nss_ldap only) if the server
+# has not been contacted for the number of seconds specified below.
+#idle_timelimit 3600
+
+# Use paged rseults
+#nss_paged_results yes
+
+# Pagesize: when paged results enable, used to set the pagesize to
+# a custom value.
+#pagesize 1000
+
+# The filter to use when retrieving user information, additional to the login
+# attribute value assertion (pam_login_attribute=<login>).
+pam_filter {{ sysauth_ldap_people_filter }}
+
+# The user ID attribute (defaults to 'uid').
+#pam_login_attribute uid
+
+# Search the root DSE for the password policy (defaults to 'no').
+#pam_lookup_policy yes
+
+# Group to enforce membership of.
+#pam_groupdn cn=PAM,ou=Groups,dc=padl,dc=com
+
+# Group member attribute.
+pam_member_attribute {{ sysauth_ldap_groups_member_attr }}
+
+# Specify a minium or maximum UID number allowed.
+pam_min_uid {{ sysauth_ldap_min_uid }}
+#pam_max_uid 65536
+
+# Password change protocol:
+#   clear: Do not hash the password at all; presume the directory server will
+#          do it, if necessary (default).
+#   exop:  Use the OpenLDAP password change extended operation to update the
+#          password.
+# See man pam_ldap for more protocols.
+pam_password exop
+
+# Redirect users to a URL or somesuch on password changes.
+#pam_password_prohibit_message Please visit http://internal to change your password.
+
+# Use backlinks for answering initgroups().
+#nss_initgroups backlink
+
+# Enable support for RFC2307bis (distinguished names in group members).
+#nss_schema rfc2307bis
+
+# RFC2307bis naming contexts
+# Syntax is:
+#   nss_base_XXX  base?scope?filter
+# where scope is {base,one,sub} and filter is a filter to be &'d with the
+# default filter.
+nss_base_passwd	      {{ sysauth_ldap_people_base }},{{ sysauth_ldap_base }}?{{ sysauth_ldap_scope }}
+nss_base_shadow       {{ sysauth_ldap_people_base }},{{ sysauth_ldap_base }}?{{ sysauth_ldap_scope }}
+nss_base_group        {{ sysauth_ldap_groups_base }},{{ sysauth_ldap_base }}?{{ sysauth_ldap_scope }}
+#nss_base_hosts	      ou=Hosts,dc=padl,dc=com?one
+#nss_base_services    ou=Services,dc=padl,dc=com?one
+#nss_base_networks    ou=Networks,dc=padl,dc=com?one
+#nss_base_protocols   ou=Protocols,dc=padl,dc=com?one
+#nss_base_rpc         ou=Rpc,dc=padl,dc=com?one
+#nss_base_ethers      ou=Ethers,dc=padl,dc=com?one
+#nss_base_netmasks    ou=Networks,dc=padl,dc=com?ne
+#nss_base_bootparams  ou=Ethers,dc=padl,dc=com?one
+#nss_base_aliases     ou=Aliases,dc=padl,dc=com?one
+#nss_base_netgroup    ou=Netgroup,dc=padl,dc=com?one
+
+# Attribute/objectclass mapping
+# Syntax:
+#   nss_map_attribute    rfc2307attribute    mapped_attribute
+#   nss_map_objectclass  rfc2307objectclass  mapped_objectclass
+#
+# NDS mappings
+#nss_map_attribute uniqueMember member
+#
+# AuthPassword mappings
+#nss_map_attribute userPassword authPassword
+
+# OpenLDAP SSL mechanism
+# start_tls mechanism uses the normal LDAP port, LDAPS typically 636
+#ssl start_tls
+###ssl on
+# Gentoo note: Don't use 'ssl on' in 249/250. They are broken in some cases! Use start_tls instead.
+
+# OpenLDAP SSL options
+# Require and verify server certificate (yes/no).
+# Default is to use libldap's default behavior, which can be configured in
+# /etc/openldap/ldap.conf using the TLS_REQCERT setting.  The default for
+# OpenLDAP 2.0 and earlier is 'no', for 2.1 and later is 'yes'.
+tls_checkpeer yes
+
+# CA certificates for server certificate verification
+# At least one of these are required if tls_checkpeer is 'yes'.
+#tls_cacertfile /etc/ssl/ca.cert
+tls_cacertdir /etc/ssl/certs
+
+# SSL cipher suite
+# See man ciphers for syntax.
+#tls_ciphers TLSv1
+
+# Timeout behavior
+# For Gentoo's distribution of nss_ldap, as of 250-r1, we use these values
+# (The hardwired constants in the code are changed to them as well):
+nss_reconnect_tries 4			# number of times to double the sleep time
+nss_reconnect_sleeptime 1		# initial sleep value
+nss_reconnect_maxsleeptime 16	# max sleep value to cap at
+nss_reconnect_maxconntries 2	# how many tries before sleeping
+# This leads to a delay of 15 seconds (1+2+4+8=15) per lookup if the
+# server is not available.
+
+# Ignore users that we know are local.
+nss_initgroups_ignoreusers {{ sysauth_ldap_ignore_users | join(',') }}
+
+# Override values for the specified attributes.
+{% for item in sysauth_ldap_override_attributes %}
+nss_override_attribute_value {{ item }}
+{% else %}
+#nss_override_attribute_value <attribute> <value>
+{% endfor %}

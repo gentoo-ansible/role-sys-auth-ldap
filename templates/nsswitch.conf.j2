@@ -1,0 +1,21 @@
+# {{ ansible_managed }}
+
+passwd:      compat
+shadow:      files ldap
+group:       files{% if sysauth_ldap_groups_enabled %} ldap{% endif %}
+
+passwd_compat: ldap
+
+hosts:       files dns
+networks:    files dns
+
+services:    db files
+protocols:   db files
+rpc:         db files
+ethers:      db files
+netmasks:    files
+netgroup:    files
+bootparams:  files
+
+automount:   files
+aliases:     files

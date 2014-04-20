@@ -1,0 +1,28 @@
+---
+- name: configure nss_ldap and pam_ldap
+  template: >
+    src=ldap.conf.j2
+    dest=/etc/ldap.conf
+  notify: restart unscd
+
+- name: configure PAM
+  template: >
+    src={{ item }}.j2
+    dest=/etc/pam.d/{{ item }}
+  with_items:
+    - system-auth
+    - system-login
+
+- name: configure nsswitch
+  template: >
+    src=nsswitch.conf.j2
+    dest=/etc/nsswitch.conf
+    validate='echo %s; getent passwd root && getent shadow root && getent group root'
+  notify: restart unscd
+
+- name: ensure that LDAP users cannot login when not listed in passwd
+  lineinfile: >
+    dest=/etc/passwd
+    insertafter=EOF
+    line='+::::::/sbin/nologin'
+    validate='echo %s; getent passwd root'
