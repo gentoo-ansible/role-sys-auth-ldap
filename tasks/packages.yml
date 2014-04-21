@@ -1,9 +1,15 @@
 ---
-- name: install nss_ldap and pam_ldap
+- name: add overlay cvut
+  layman: >
+    name=cvut
+    list_url=http://raw.github.com/cvut/gentoo-overlay/master/overlay.xml
+
+- name: 'install nss_ldap, pam_ldap and ssh-ldap-pubkey'
   portage: package={{ item }}
   with_items:
     - sys-auth/nss_ldap
     - sys-auth/pam_ldap
+    - sys-auth/ssh-ldap-pubkey
 
 - name: install unscd
   portage: package=sys-apps/unscd
