@@ -20,3 +20,12 @@
     path=/etc/nsswitch.ldap
     state=absent
   tags: cleanup
+
+- name: copy useradd-nis and userdel-nis scripts
+  copy: >
+    src={{ item }}
+    dest=/usr/local/bin/{{ item }}
+    owner=root group=root mode=0744
+  with_items:
+    - useradd-nis
+    - userdel-nis

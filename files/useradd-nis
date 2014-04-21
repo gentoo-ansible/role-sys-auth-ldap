@@ -1,0 +1,83 @@
+#!/bin/bash
+
+DEFAULT_SHELL=/bin/bash
+
+
+###############  Arguments  ###############
+
+usage() {
+	cat <<-EOF
+		This script adds entry to /etc/passwd for user in NIS/LDAP.
+
+		Usage: ${scriptname} [options] LOGIN
+
+		Options:
+		-d, --home-dir HOME_DIR    home directory of the user.
+		-s, --shell SHELL          login shell of the user.
+		-h, --help                 show this help.
+	EOF
+}
+
+scriptname=$(basename $0)
+home=
+shell="$DEFAULT_SHELL"
+user=
+
+while [ $# -gt 0 ]; do
+	case $1
+	in
+		-d | --home-dir)
+			home=$2
+			shift 2
+	;;
+		-h | --help)
+			usage
+			exit 0
+	;;
+		-s | --shell)
+			shell=$2
+			shift 2
+	;;
+		-*)
+			echo "${scriptname}: Unknown option $1" >&2
+			echo; usage
+			exit 1
+	;;
+		*)
+			user=$1
+			break
+	;;
+	esac
+done
+
+
+if [ -z "$user" ]; then
+	echo "${scriptname}: Missing LOGIN" >&2
+	echo; usage
+	exit 1
+fi
+
+if [ -z "$home" ]; then
+	home="/home/${user}"
+fi
+
+
+###############  Main  ###############
+
+fail() {
+	echo "$1" >&2
+	exit 2
+}
+
+if ! id -u "$user" &>/dev/null; then
+	fail "User ${user} does not exist."
+fi
+
+if grep "^+\?${user}:" /etc/passwd &>/dev/null; then
+	fail "User ${user} is already defined in /etc/passwd"
+fi
+
+line="+${user}:::::${home}:${shell}"
+
+sed -i "\$i ${line}" /etc/passwd
+
