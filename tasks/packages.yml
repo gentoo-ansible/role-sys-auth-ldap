@@ -14,3 +14,9 @@
 - name: install unscd
   portage: package=sys-apps/unscd
   when: sysauth_ldap_unscd_enabled
+
+- name: remove useless example files
+  file: >
+    path=/etc/nsswitch.ldap
+    state=absent
+  tags: cleanup
