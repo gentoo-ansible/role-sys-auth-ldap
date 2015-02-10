@@ -69,7 +69,7 @@ sysauth_ldap_groups_member_attr: memberuid
 
 # The minimum UID number allowed.
 # - name: pam_min_uid
-sysauth_ldap_min_uid: 1000
+sysauth_ldap_min_uid: '1000'
 
 # List of users' that will not be search in LDAP, i.e. local users.
 # -name: nss_initgroups_ignoreusers
@@ -90,5 +90,6 @@ sysauth_ldap_mkhomedir_enabled: true
 
 # The umask to use for creating user's home directory. Applicable only when
 # sysauth_ldap_mkhomedir_enabled is 'true'.
+# IT MUST BE STRING (IN QUOTES)!
 # - name: umask
-sysauth_ldap_mkhomedir_umask: 0077
+sysauth_ldap_mkhomedir_umask: '0077'
