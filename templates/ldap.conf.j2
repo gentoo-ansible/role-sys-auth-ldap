@@ -18,10 +18,10 @@ ldap_version 3
 
 # The distinguished name to bind to the server with.
 # Default is to bind anonymously.
-#binddn cn=proxyuser,dc=padl,dc=com
+{{ '' if sysauth_ldap_bind_dn else '#' }}binddn {{ sysauth_ldap_bind_dn }}
 
 # The credentials to bind with. Default is no credential.
-#bindpw secret
+{{ '' if sysauth_ldap_bind_pass else '#' }}bindpw {{ sysauth_ldap_bind_pass }}
 
 # The distinguished name to bind to the server with if the effective user ID is
 # root. Password is stored in /etc/ldap.secret (mode 600).

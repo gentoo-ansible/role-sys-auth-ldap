@@ -20,6 +20,15 @@ sysauth_ldap_groups_enabled: false
 # - name: uri
 sysauth_ldap_server_uri: 'ldap://localhost'
 
+# The distinguished name to bind to the server with.
+# Default is to bind anonymously.
+# - name: binddn
+sysauth_ldap_bind_dn: ''
+
+# The credentials to bind with. Default is no credential.
+# - name: bindpw
+sysauth_ldap_bind_pass: ''
+
 # The search time limit in seconds (0 for indefinite).
 # - name: timelimit
 sysauth_ldap_bind_timeout: 5
