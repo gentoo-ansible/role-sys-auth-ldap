@@ -69,7 +69,7 @@ if [ -n "$delhome" ]; then
 			fail "User's home is '${home}'; you really SHOULD NOT delete this..."
 		fi
 	done
-	
+
 	read -p "Are you sure want to delete ${home} ? Type 'yes' to continue: " answer
 	if [ "$answer" == 'yes' ]; then
 		rm -Rfv -- "$home"
